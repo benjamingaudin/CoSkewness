@@ -1,0 +1,13 @@
+%% CoSkewness Examples
+%%
+A = [NaN 0 3 7 1 6; 1 -5 7 3 NaN NaN; 4 9 8 10 -1 6]';
+
+% a symmetric matrix of co-skewness
+m = CoSkewness( A ).matrix()
+% the diagonal elements retrieve Matlab's function (adjusted for bias)
+skewness( A, 0 )
+% the full rank-3 skewness tensor
+t = CoSkewness( A ).tensor()
+m = CoSkewness( A, 'Biased', true ).matrix( 'Symmetric', false )
+% the diagonal elements retrieve Matlab's function (non-adjusted for bias)
+skewness( A )

@@ -91,7 +91,6 @@ classdef CoSkewness
             parser = parser.Results;
             
             n = obj.getN( obj.dataDemeaned );
-            n = min( n, n' );
             x2 = obj.dataDemeaned0 .^ 2;
             
             numX = 1./n .* ( obj.dataDemeaned0' * x2 );
@@ -135,32 +134,28 @@ classdef CoSkewness
             s = NaN( nbvar, nbvar, nbvar );
             n = s;
             for x = 1:nbvar
-                for y = x:nbvar
-                    for z = y:nbvar
-                        d = obj.dataDemeaned( :, [ x, y, z ] );
-                        p = prod( d, 2 );
-                        n( x, y, z ) = obj.getN( p );
-                        s_ = nanmean( p, 1 );
-                        if obj.standardized
-                            % compute values where all variables are not NaN
-                            d = obj.dataDemeaned( :, [ x, y, z ] );
-                            d = d .* obj.oneify( p );
-                            sig_ = sqrt( obj.sigma2( d ) );
-                            denom = prod( sig_ );
-                            s_ = s_ / denom;
-                        end
-                        s( x, y, z ) = s_;
-                    end
-                end
-            end
-            for x = 1:nbvar
                 for y = 1:nbvar
                     for z = 1:nbvar
-                        if x <= y && y <= z; continue; end
-                        a = sort( [ x, y, z ] );
-                        a = num2cell( a );
-                        s( x, y, z ) = s( a{:} );
-                        n( x, y, z ) = n( a{:} );
+                        if x <= y && y <= z
+                            d = obj.dataDemeaned( :, [ x, y, z ] );
+                            p = prod( d, 2 );
+                            n( x, y, z ) = obj.getN( p );
+                            s_ = nanmean( p, 1 );
+                            if obj.standardized
+                                % compute values where all variables are not NaN
+                                d = obj.dataDemeaned( :, [ x, y, z ] );
+                                d = d .* obj.oneify( p );
+                                sig_ = sqrt( obj.sigma2( d ) );
+                                denom = prod( sig_ );
+                                s_ = s_ / denom;
+                            end
+                            s( x, y, z ) = s_;
+                        else
+                            a = sort( [ x, y, z ] );
+                            a = num2cell( a );
+                            s( x, y, z ) = s( a{:} );
+                            n( x, y, z ) = n( a{:} );
+                        end
                     end
                 end
             end
